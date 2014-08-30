@@ -39,16 +39,9 @@ function formatMovieHTML(movie){
     }else{
         imageUrl +=movie.poster_path;
     }
-    var html = '<div class="col-md-3 portfolio-item" data-id="'+movie.id+'">'+
-        '<a href="#">'+
-            '<img height="100px"class="img-responsive" src="'+imageUrl+'" alt="/static/img/logo.png">'+
-        '</a>'+
-        '<h4>'+
-        '    <a href="#" >'+movie.original_title+'</a>'+
-        '</h4>'+
-    '</div>';
-    return html;
+    
 }
+
 function makeEmbed(key){
     return '<embed width="500" height="400" src="https://www.youtube.com/v/'+key+'" type="application/x-shockwave-flash">'
 }
