@@ -79,47 +79,84 @@
         <div id="movie-view">
       <div class="movie-view">
                 <!-- Nav tabs -->
+        <table cellpadding="10" cellspacing="30">
+                    <tr>
+                        <td>
         <ul class="nav nav-tabs" role="tablist">
               <h3>Trailer:</h3>
               <div class="tab-pane active" id="Trailer1">
                 
               </div>
+             </td>
+             <td>
+                    <div style="width:180px"></div>
+             </td>
+             <td valign="top">
+        
+                <h3>Cast of Characters:</h3>
+                             <div STYLE=" height: 380px; border:2px; width: 350px; font-size: 12px; overflow: auto;">
+                      <div id="casts"></div>
+                       <div id="casts2" style="display:none"></div>
+                       <div id="showCasts"></div>
+                        </div>
             
-        <div class="moviedetails">
-
-            
-              <h3>Synopsis: </h3>
+             </td></tr>
+                </table>
+                <div class="moviedetails">
+                      <h3>Synopsis: </h3>
               <div id="synopsis"></div>
             
-            <p></p>
-            
-            
-                            <h3>Cast: </h3>
-                            <div id="casts"></div>
-                        
-            <p></p>
-                        
-                            <h3>Similar Movies: </h3>
-                            <div>
-                                <span id="similar-movies1"></span>
-                                <a href="javascript:void(0)" class="similar-toggle" style = "color:blue">Show all</a>
-                                <span id="similar-movies2" style="display:none"></span>
-
-                                <a href="javascript:void(0)" class="similar-toggle" style = "color:blue; display:none">Show less</a>
-                            </div>
-
-                       
-                        <p></p>
+            <p></p></div>
+         
+                    
+                       <h3>Similar Movies: </h3>
+                       <div class="col-lg-12">
+                           <span id="similar-movies1"></span>
+                           <a href="javascript:void(0)" class="similar-toggle" style = "color:#8B008B">Show all</a>
+                           <span id="similar-movies2" style="display:none"></span>
+                            <a href="javascript:void(0)" class="similar-toggle" style = "color:#8B008B; display:none">Show less</a>
+                        </div>
             <br><br><br><br><br><br>
     
-            </div>
-          </div>
+            
+          </div></div>
+
+      <!-- Handlebars -->
+      <div></div> 
+
+      {% raw %}
+    <script type="text/x-handlebars-template" id="tpl-list">
+    {{#each this.results}}
+        <div class="col-md-3 portfolio-item" data-id="{{id}}">
+            <a href="#">
+                <img height="100px"class="img-responsive" src="https://image.tmdb.org/t/p/w130/{{poster_path}}" alt="/static/img/logo.png">
+            </a>
+            <h4>
+                <a href="#" >{{title}}</a>
+            </h4>
         </div>
-      </div>  
+    {{/each}}    
+    </script>
+    {% endraw %}
 
+    <script type="text/javascript">
+      $(function() {
+      var list = [
+        {
+          "id": movie.id,
+          "poster_path":imgUrl,
+          "title":movie.original_title
+        }
+      ];
 
+      var rawTpl = $('#tpl-list').html();
+      var template = Handlebars.compile(rawTpl);
+      var markup = template(list);
+      $('#movie-list').append(markup);
+      });
 
-    </div>
+    </script>
+
 
      <!-- Footer -->
      <div class ="navbar navbar-default navbar-fixed-bottom">
@@ -129,6 +166,11 @@
     <p class="navbar-text pull-right">RM SUMAYA & SHINEE CRISOSTOMO</p>
     </div>
     </div>
+
+    
+
+
+
     <!-- /.container -->
 
     <!-- jQuery Version 1.11.0 -->
@@ -139,6 +181,8 @@
     <!-- movie db api js -->
     <script src="/static/js/moviedb.js"></script>
     <script type="text/javascript">init();</script>
+    <script type="text/javascript" src="handlebars.js"></script>
+  <script type="text/javascript" src="jquery.js"></script>
 </body>
 
 </html>
