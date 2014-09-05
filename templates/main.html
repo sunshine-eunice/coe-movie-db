@@ -3,186 +3,216 @@
     <title>MovieDB</title>
     <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.css">
 </head>
-<body style ="background-color:#E6E6FA">
-  
 
-    <!-- Navigation -->
-    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-        <div class="container">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="#" style="color:#FF7F50">Movie Database Module</a>
-            </div>
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav">
-                
-                <li style = "padding-left:10px; padding-right:10px">
-                    <a href="#" id="now_playing" class="filter-link">Now Showing</a>  
-                </li>
-                <li style = "padding-left:10px; padding-right:10px">
-                    <a href="#" id="upcoming" class="filter-link" >Next Attraction</a>  
-                </li>
-                
-                <li style = "padding-left:10px; padding-right:10px">
-                    <a href="#" id="popular" class="filter-link">Popular</a>
-                </li>
+<style>
+.under
+{
+position:absolute;
+left:30px;
+top:200px;
+z-index:3;
+}
 
-                <li style = "padding-left:10px;padding-right:10px;">
-                    <a href="#" id="top_rated"  class="filter-link">Top Rated</a> 
-                </li>
-                </ul>
-                <form class="navbar-form navbar-right" role="search" id="movie-search">
+.beneath
+{
+position:absolute;
+left:150px;
+top:250px;
+font-color: inherit;
+z-index:3;
+}
+</style>
+
+<body>
+
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#" style="color:#FF7F50">Movie Database Module</a>
+        </div>
+        <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+              <li><a href="javascript:void(0)" class='btn-now-showing active'>Now Showing</a></li>
+              <li class="divider-vertical"></li>
+              <li><a href="javascript:void(0)" class='btn-upcoming'>Next Attraction</a></li>
+              <li class="divider-vertical"></li>
+              <li><a href="javascript:void(0)" class='btn-popular'>Trending</a></li>
+              <li class="divider-vertical"></li>
+              <li><a href="javascript:void(0)" class='btn-top-rated'>Top Rated</a></li>
+            </ul>
+            
+            <form class="navbar-form navbar-right" role="search" id="movie-search">
                   <div class="form-group">
                     <input type="text" class="form-control typeahead" placeholder="Search">
                   </div>
                   <button type="submit" class="btn btn-default" style ="background-color:#FF7F50"><span class="glyphicon glyphicon-search"></span></button>
                 </form>
+                </div><!--/.nav-collapse -->
+              </div>
             </div>
 
-            <!-- /.navbar-collapse -->
+    <div class="container" style='top: 70px; position: relative;'>
+        <div class='movies-list'>
+
+        </div><!-- /.row -->
+    </div><!-- /.container -->
+
+        {% raw %}
+    <script type="text/x-handlebars-template" id="tpl-list">
+        <div class="col-lg-12">
+            <h1 class="page-header" style="border-bottom:1px solid black">{{header}}
+                <small>Movies</small>
+            </h1>
         </div>
-        <!-- /.container -->
-    </nav>
-
-    <!-- Page Content -->
-    <div class="container" style="margin-top:30px">
-        
-       
-        <br><br>
-        <!-- Projects Row -->
-        <div id="movie-list">
+    {{#each this.result.results}}
+        <div class="movie col-md-6 movie-link" data-id="{{id}}">
+                <img width="100%" height="100%" class="img-responsive backdrop" 
+                    {{#if backdrop_path}}src="{{../../config.images.base_url}}{{../../config.images.poster_sizes.[3]}}{{backdrop_path}}" 
+                    {{else}}src="https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQFkoKibkS4-HEX0leN_MTEp28tcaF0Qwow00o0PlRCyJTfDEzo"
+                    {{/if}}>
+                <div class="movie-desc">
+                 <a href="#">
+                    <img height="100px" class="img-responsive poster" 
+                        {{#if poster_path}}src="{{../../config.images.base_url}}{{../../config.images.poster_sizes.[1]}}{{poster_path}}" 
+                        {{else}}src="https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQFkoKibkS4-HEX0leN_MTEp28tcaF0Qwow00o0PlRCyJTfDEzo"
+                        {{/if}}>
+                    <h4 class="movie-title">
+                        {{title}}
+                    </h4>
+                </a>
+                <br>
+                <hr>
+                <div id="{{id}}" style="float:none">
+                </div> 
+            </div>
+            
         </div>
-        <!-- /.row -->
-
-        <hr>
-
-        <!-- Pagination -->
+    {{/each}}    
+    </script>
+    <script type="text/x-handlebars-template" id="tpl-page">
         <div class="row text-center">
             <div class="col-lg-12">
                 <ul class="pagination">
-                    <li>
-                        <a href="#">&laquo;</a>
+                    <li {{#if startingPage}}class="disabled"{{/if}}>
+                        <a href="#" data-query="{{query}}">&laquo;</a>
+                    </li>
+                    {{#each this.pages}}
+                        <li>
+                            <a href="#" class="page-link" {{#if active}}class="active"{{/if}} data-query="{{../query}}" data-id="{{page}}">{{page}}</a>
+                        </li>
+                    {{/each}}
+                    <li {{#if endPage}}class="disabled"{{/if}}>
+                        <a href="#" data-query="{{query}}">&raquo;</a>
                     </li>
                 </ul>
                 <div id="page-number"></div>
             </div>
-        </div><br><br><br>
-        <!-- /.row -->
-
-        <div id="movie-view">
-      <div class="movie-view">
-                <!-- Nav tabs -->
-        <table cellpadding="10" cellspacing="30">
-                    <tr>
-                        <td>
-        <ul class="nav nav-tabs" role="tablist">
-              <h3>Trailer:</h3>
-              <div class="tab-pane active" id="Trailer1">
-                
-              </div>
-             </td>
-             <td>
-                    <div style="width:180px"></div>
-             </td>
-             <td valign="top">
-        
-                <h3>Cast of Characters:</h3>
-                             <div STYLE=" height: 380px; border:2px; width: 350px; font-size: 12px; overflow: auto;">
-                      <div id="casts"></div>
-                       <div id="casts2" style="display:none"></div>
-                       <div id="showCasts"></div>
-                        </div>
-            
-             </td></tr>
-                </table>
-                <div class="moviedetails">
-                      <h3>Synopsis: </h3>
-              <div id="synopsis"></div>
-            
-            <p></p></div>
-         
-                    
-                       <h3>Similar Movies: </h3>
-                       <div class="col-lg-12">
-                           <span id="similar-movies1"></span>
-                           <a href="javascript:void(0)" class="similar-toggle" style = "color:#8B008B">Show all</a>
-                           <span id="similar-movies2" style="display:none"></span>
-                            <a href="javascript:void(0)" class="similar-toggle" style = "color:#8B008B; display:none">Show less</a>
-                        </div>
-            <br><br><br><br><br><br>
-    
-            
-          </div></div>
-
-      <!-- Handlebars -->
-      <div></div> 
-
-      {% raw %}
-    <script type="text/x-handlebars-template" id="tpl-list">
-    {{#each this.results}}
-        <div class="col-md-3 portfolio-item" data-id="{{id}}">
-            <a href="#">
-                <img height="100px"class="img-responsive" src="https://image.tmdb.org/t/p/w130/{{poster_path}}" alt="/static/img/logo.png">
-            </a>
-            <h4>
-                <a href="#" >{{title}}</a>
-            </h4>
         </div>
-    {{/each}}    
+    </script>
+
+    <script type="text/x-handlebars-template" id="tpl-movie-view">
+        <div id="carousel-backdrop" class="carousel slide" data-ride="carousel">
+              <!-- Indicators -->
+              <ol class="carousel-indicators">
+               {{#each movie.images.backdrops}}
+                <li data-target="#carousel-backdrop" data-slide-to="{{@index}}" {{#unless @index}}class="active"{{/unless}}></li>
+                {{/each}}
+              </ol>
+
+
+            <div class="row">
+                <div id="trailer">
+                    <div class="embed-responsive embed-responsive-4by3">
+                        <iframe src="https://www.youtube.com/embed/{{movie.videos.results.0.key}}" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                </div>
+                <div id="movie-details">
+                    <h3>Overview: </h3>
+                    {{movie.overview}}
+                    <h2>Tagline:</h2>
+                        {{#if movie.tagline}} {{movie.tagline}}                   
+                        {{else}} No tagline
+                        {{/if}}
+                   
+                </div>
+            </div>
+            <div class="row">
+
+                    <h3>Casts: </h3>
+                     <hr>
+                    {{#each_upto movie.casts.cast 4}}
+                        <div class="col-md-1 casts" class="cast">
+                            <img class="img-responsive" src="{{../config.images.base_url}}{{../config.images.poster_sizes.[0]}}{{profile_path}}">
+                            {{name}}
+                        </div>
+                    {{/each_upto}}
+                    <div style="display:none">
+                        {{#each_from movie.casts.cast 5}}
+                            <div class="col-md-1 casts">
+                                <img class="img-responsive" src="{{../config.images.base_url}}{{../config.images.poster_sizes.[0]}}{{profile_path}}">
+                                {{name}}
+                            </div>
+                        {{/each_from}}
+                    </div>
+                     <div>
+                        <a href="#" onclick="togglePrevDiv(this)" class="show-hide">Show/Hide</a>
+                    </div>
+                    <div class="detail-container">
+
+                    </div>    
+                </div>
+                <div></div>
+
+                    <h3>Similar Movies: </h3>
+                     <hr>
+                    {{#each_upto movie.similar.results 4}}
+                        <a class="movie-link" href="#" onclick="singleMovieQuery({{id}})">
+                            <div class="col-md-1 casts" class="cast">
+                                <img class="img-responsive" src="{{../config.images.base_url}}{{../config.images.poster_sizes.[0]}}{{poster_path}}">
+                                {{original_title}}
+                            </div>
+                        </a>
+                    {{/each_upto}}
+                    <div style="display:none">
+                        {{#each_from movie.similar.results 5}}
+                            <a href="#" class="movie-link" onclick="singleMovieQuery({{id}})">
+                                <div class="col-md-1 casts">
+                                    <img class="img-responsive" src="{{../config.images.base_url}}{{../config.images.poster_sizes.[0]}}{{poster_path}}">
+                                    {{original_title}}
+                                </div>
+                            </a>
+                        {{/each_from}}
+                    </div>
+                     <div>
+                        <a href="#" onclick="togglePrevDiv(this)" class="show-hide">Show/Hide</a>
+                    </div>
+                </div>    
+            </div>
+
     </script>
     {% endraw %}
+	
 
-    <script type="text/javascript">
-      $(function() {
-      var list = [
-        {
-          "id": movie.id,
-          "poster_path":imgUrl,
-          "title":movie.original_title
-        }
-      ];
-
-      var rawTpl = $('#tpl-list').html();
-      var template = Handlebars.compile(rawTpl);
-      var markup = template(list);
-      $('#movie-list').append(markup);
-      });
-
-    </script>
-
-
-     <!-- Footer -->
-     <div class ="navbar navbar-default navbar-fixed-bottom">
+	<div class ="navbar navbar-default navbar-fixed-bottom">
     <div class="container">
     
     <button type="button" class="navbar-inverse btn btn-primary pull-right" style="margin-top:10px;">Team 10</button>
     <p class="navbar-text pull-right">RM SUMAYA & SHINEE CRISOSTOMO</p>
     </div>
     </div>
+<br>
+<br>
 
-    
-
-
-
-    <!-- /.container -->
-
-    <!-- jQuery Version 1.11.0 -->
-    <script src="/static/js/jquery-1.11.0.js"></script>
-
-    <!-- Bootstrap Core JavaScript -->
-    <script src="/static/js/bootstrap.min.js"></script>
-    <!-- movie db api js -->
-    <script src="/static/js/moviedb.js"></script>
-    <script type="text/javascript">init();</script>
-    <script type="text/javascript" src="handlebars.js"></script>
-  <script type="text/javascript" src="jquery.js"></script>
+    <script src="/static/js/vendors/jquery.js"></script>
+    <script src="/static/js/vendors/bootstrap.min.js"></script>
+    <script src="/static/js/vendors/handlebars.js"></script>
+    <script src="/static/js/app.js"></script>
 </body>
 
 </html>
